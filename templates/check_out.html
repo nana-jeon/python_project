@@ -1,0 +1,154 @@
+{#{% extends 'master.html' %}#}
+<link rel="stylesheet" href="/static/style.css" />
+{% block content %}
+
+<body>
+    <div class="container">
+        <div class="checkout-header">
+            <h1>Checkout</h1>
+        </div>
+
+        <div class="checkout-grid">
+            <div class="checkout-section">
+                <h2 class="section-title">Billing Address</h2>
+
+                <form method="POST" action="/process_checkout">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <input type="text" id="first-name" name="first_name" placeholder="Enter your first name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <input type="text" id="last-name" name="last_name" placeholder="Enter your last name" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" name="address" placeholder="1234 Main St" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="text" id="phone" name="phone" placeholder="+855" required>
+                        </div>
+
+                         <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="you@email.com" required>
+                        </div>
+                    </div>
+
+            <div class="checkout-section">
+                <h2 class="section-title">Order Summary</h2>
+
+                <div id="cart-items-container">
+                    <!-- Cart items will be dynamically inserted here -->
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="price-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+
+                 <div class="price-row total-row">
+                    <div>
+                        <span>Total (USD): </span>
+                        <span id="total-usd">$0.00</span>
+                    </div>
+                    <div>
+                        <span>Total (KHR): </span>
+                        <span id="total-khr">៛0.00</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-check-out">Place Order</button>
+            </div>
+                </form>
+                <a href="/add_cart" class="back-link">Back to Cart</a>
+                <br><br>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+{% endblock %}
+
+
+{% block custom_script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load cart from localStorage
+        const carts = JSON.parse(localStorage.getItem('carts')) || [];
+        const cartContainer = document.getElementById('cart-items-container');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalUsdElement = document.getElementById('total-usd');
+        const totalKhrElement = document.getElementById('total-khr');
+
+        // Exchange rate (1 USD to KHR)
+        const exchangeRate = 4100; // You can update this with current rate
+
+        let subtotal = 0;
+
+        // Clear previous items
+        cartContainer.innerHTML = '';
+
+        if (carts.length === 0) {
+            cartContainer.innerHTML = '<p>Your cart is empty</p>';
+            return;
+        }
+
+        // Add each cart item to the display
+        carts.forEach(item => {
+            const itemTotal = parseFloat(item.price) * parseInt(item.quantity);
+            subtotal += itemTotal;
+
+            const itemElement = document.createElement('div');
+            itemElement.className = 'order-item';
+            itemElement.innerHTML = `
+            <div class="product-header">
+                <span class="product-name">${item.title} (${item.quantity})</span>
+                <span class="product-price"> $${itemTotal.toFixed(2)}</span>
+            </div>
+        `;
+            cartContainer.appendChild(itemElement);
+        });
+
+        // Calculate KHR total
+        // Convert to cents/pennies to avoid floating point issues
+        const totalKhr = Math.round(subtotal * 100) * (exchangeRate / 100);
+
+        // Update totals
+        subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+        totalUsdElement.textContent = `$${subtotal.toFixed(2)}`;
+        totalKhrElement.textContent = `៛${totalKhr.toLocaleString()}`; // KHR typically doesn't use decimals
+
+        // Store the calculated totals in hidden fields
+        if (document.querySelector('form')) {
+            const totalUsdInput = document.createElement('input');
+            totalUsdInput.type = 'hidden';
+            totalUsdInput.name = 'total_amount_usd';
+            totalUsdInput.value = subtotal.toFixed(2);
+            document.querySelector('form').appendChild(totalUsdInput);
+
+            const totalKhrInput = document.createElement('input');
+            totalKhrInput.type = 'hidden';
+            totalKhrInput.name = 'total_amount_khr';
+            totalKhrInput.value = totalKhr.toFixed(0);
+            document.querySelector('form').appendChild(totalKhrInput);
+            
+            // Also store cart data as JSON
+            const cartInput = document.createElement('input');
+            cartInput.type = 'hidden';
+            cartInput.name = 'cart_data';
+            cartInput.value = JSON.stringify(carts);
+            document.querySelector('form').appendChild(cartInput);
+        }
+    });
+</script>
+{% endblock %}

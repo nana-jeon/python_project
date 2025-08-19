@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Invoice</title>
+  <style>
+    .invoice-box {
+      margin: auto;
+      padding: 30px;
+      border: 1px solid #eee;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .company-info,
+    .client-info {
+      margin-bottom: 20px;
+    }
+    .company-info strong,
+    .client-info strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table thead {
+      background: #f5f5f5;
+    }
+    table th,
+    table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .totals {
+      margin-top: 30px;
+      width: 100%;
+    }
+    .totals td {
+      padding: 10px;
+    }
+    .totals .label {
+      text-align: right;
+      font-weight: bold;
+    }
+    .totals .value {
+      text-align: right;
+      width: 120px;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-box">
+    <h1>INVOICE</h1>
+
+    <div class="company-info">
+      <strong>Nana Shop</strong>
+      123 Business Street<br />
+      Phnom Penh, Cambodia<br />
+      Email: info@nanashop.com
+    </div>
+
+    <div class="client-info">
+      <strong>Bill To:</strong>
+      {{ customer_name }}<br />
+      {{ customer_email }}<br />
+      {{ customer_address }}<br />
+      Phone: {{ customer_phone }}
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Description</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if items %}
+          {% for item in items %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ "%.2f"|format(item.price|float) }}</td>
+            <td>${{ "%.2f"|format(item.price|float * item.quantity|int) }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" style="text-align: center;">No items in this order</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+   <table class="totals">
+  <tr>
+    <td class="label">Total:</td>
+    <td class="value">
+      <strong>{{ total }}</strong><br>
+    </td>
+  </tr>
+</table>
+  </div>
+</body>
+</html>

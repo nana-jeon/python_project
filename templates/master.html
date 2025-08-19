@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce Header</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<header class="header">
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search">
+    </div>
+    <div class="cart-section">
+        <div class="cart-icon"></div>
+        <a href="/add_cart" class="cart-container" id="btn-card">Cart(0)</a>
+    </div>
+</header>
+
+  {% block content %}
+
+      {% endblock %}
+
+  <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Romdoul Shop. All rights reserved.</p>
+        </div>
+</footer>
+
+{% block custom_script %}
+	
+{% endblock %}
+<script>
+    function  countCartItem(){
+        let carts_count = (JSON.parse(localStorage.getItem('carts')) || []).length
+        document.getElementById('btn-card').innerText = `Cart(${carts_count})`
+    }
+    countCartItem()
+
+</script>
+
+</body>
+</html>
