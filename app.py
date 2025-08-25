@@ -452,7 +452,7 @@ def process_checkout():
         cart_data = []
 
 
-    token = '8116993901:AAFV2oZ3_MOrEhL_XsqYUjtTIyzOqmqQ0WY'
+    # token = '8116993901:AAFV2oZ3_MOrEhL_XsqYUjtTIyzOqmqQ0WY'
     chat_id = '@O_Romdoul'
 
     # Initialize totals
@@ -501,9 +501,10 @@ def process_checkout():
         chat_id=chat_id,
         message=html,
     )
-    msg = Message('Invoice From Nana Shop', recipients=['sreylis534@gmail.com'])
+    # msg = Message('Invoice From Nana Shop', recipients=['sreylis534@gmail.com'])
+    msg = Message('Invoice From Nana Shop', recipients=[email])
     msg.body = 'This is a plain text email sent from Flask'
-    message = render_template('invoice.html')
+    # message = render_template('invoice.html')
     msg.html = render_template('invoice.html',
                                customer_name=f"{first_name} {last_name}",
                                customer_email=email,
@@ -511,11 +512,13 @@ def process_checkout():
                                customer_phone=phone,
                                items=cart_data,
                                total=f"${total:.2f}",
-                               total_khr = f"${formatted_khr}"
+                               # total_khr = f"${formatted_khr}"
                                )
     mail.send(msg)
 
-    return f"{res}"
+    return "Order placed successfully! "
+
+    # return f"{res}"
 
     # return f"{first_name} {last_name}, {email}, {phone}, {address}, {first_item.get('title', 'No items')}"
 
